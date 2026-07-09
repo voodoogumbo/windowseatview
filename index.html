@@ -1,3 +1,8 @@
+<!--
+  ASSET_VERSION = "1.2"
+  BUMP RULE: Increment this version constant on every production deploy.
+  Update all first party asset query parameters (?v=1.2) in this file and app.js.
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,8 +15,8 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   
   <!-- App Stylesheet -->
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css?v=1.2">
+  <link rel="icon" href="favicon.svg?v=1.2" type="image/svg+xml">
 </head>
 <body>
   
@@ -73,7 +78,7 @@
               <div class="metric-value" id="dist-km">432 km</div>
               <div class="metric-label">Kilometers</div>
             </div>
-          </div>
+          <button id="open-math-btn" class="btn btn-math">See the Math! 🌍</button>
         </div>
         
         <div>
@@ -128,7 +133,20 @@
     </details>
   </footer>
   
+  <!-- Math Details Modal -->
+  <div id="math-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content" role="dialog" aria-labelledby="modal-title" aria-modal="true">
+      <div class="modal-header">
+        <h2 id="modal-title">Live Horizon Calculations</h2>
+        <button id="close-modal-btn" class="close-btn" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-math-details">
+        <!-- populated dynamically -->
+      </div>
+    </div>
+  </div>
+
   <!-- App Logic -->
-  <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/app.js?v=1.2"></script>
 </body>
 </html>

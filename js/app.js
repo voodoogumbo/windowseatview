@@ -1,12 +1,12 @@
 // WindowSeatView main application script
-import { config } from "./config.js";
+import { config } from "./config.js?v=1.2";
 import { 
   ftToM, 
   kmToMi, 
   calculateHorizonGeometric, 
   calculateHorizonRefracted, 
   haversineDistanceKm 
-} from "./horizon.js";
+} from "./horizon.js?v=1.2";
 
 // State variables
 let aircraftData = [];
@@ -306,6 +306,36 @@ function setupEventListeners() {
   });
 
   shareBtn.addEventListener("click", copyShareUrl);
+
+  // Math Modal controls
+  const mathModal = document.getElementById("math-modal");
+  const openMathBtn = document.getElementById("open-math-btn");
+  const closeModalBtn = document.getElementById("close-modal-btn");
+
+  openMathBtn.addEventListener("click", () => {
+    updateMathModalContent();
+    mathModal.style.display = "flex";
+    closeModalBtn.focus();
+  });
+
+  const closeModal = () => {
+    mathModal.style.display = "none";
+    openMathBtn.focus();
+  };
+
+  closeModalBtn.addEventListener("click", closeModal);
+
+  mathModal.addEventListener("click", (e) => {
+    if (e.target === mathModal) {
+      closeModal();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && mathModal.style.display === "flex") {
+      closeModal();
+    }
+  });
 }
 
 // Autocomplete search handler
@@ -393,6 +423,53 @@ function updateCalculations() {
 
   updateVisibleCities(lat, lon, refKm);
   updateUrlParams(lat, lon, altFtVal);
+
+  // Update math modal content if it is open
+  const mathModal = document.getElementById("math-modal");
+  if (mathModal && mathModal.style.display === "flex") {
+    updateMathModalContent();
+  }
+}
+
+// Populate Math Modal content with live figures
+function updateMathModalContent() {
+  const altFt = parseInt(altitudeSlider.value, 10);
+  const altM = ftToM(altFt);
+  
+  const geoKm = calculateHorizonGeometric(altM);
+  const geoMi = kmToMi(geoKm);
+  
+  const refKm = calculateHorizonRefracted(altM);
+  const refMi = kmToMi(refKm);
+  
+  const modalBody = document.getElementById("modal-math-details");
+  if (!modalBody) return;
+  
+  modalBody.innerHTML = `
+    <div class="math-step">
+      <div class="math-step-title">1. Cruise Altitude</div>
+      <div class="math-formula">${altFt.toLocaleString()} ft &times; 0.3048 = ${Math.round(altM).toLocaleString()} m</div>
+      <div class="math-desc">Your altitude converted from feet to meters.</div>
+    </div>
+    
+    <div class="math-step">
+      <div class="math-step-title">2. Geometric Horizon</div>
+      <div class="math-formula">d = 3.57 &times; &radic;h</div>
+      <div class="math-sub">d = 3.57 &times; &radic;${Math.round(altM).toLocaleString()} = ${Math.round(geoKm).toLocaleString()} km (${Math.round(geoMi).toLocaleString()} mi)</div>
+      <div class="math-desc">What your eye could reach on a perfectly round, airless Earth.</div>
+    </div>
+    
+    <div class="math-step">
+      <div class="math-step-title">3. Refraction Bonus</div>
+      <div class="math-formula">d = 3.86 &times; &radic;h</div>
+      <div class="math-sub">d = 3.86 &times; &radic;${Math.round(altM).toLocaleString()} = ${Math.round(refKm).toLocaleString()} km (${Math.round(refMi).toLocaleString()} mi)</div>
+      <div class="math-desc">Earth's atmosphere bends light downward around the curve, stretching your view by about 8 percent. This is the distance used by the map.</div>
+    </div>
+    
+    <div class="math-kid-friendly">
+      From your seat, you can see across a horizon that is ${Math.round(refKm).toLocaleString()} km (${Math.round(refMi).toLocaleString()} mi) wide!
+    </div>
+  `;
 }
 
 // Compute visible cities and render list

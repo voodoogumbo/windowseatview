@@ -53,3 +53,10 @@ node js/horizon.test.mjs
 To add Buy Me a Coffee links or Discord webhooks:
 1. Copy `js/config.example.js` to `js/config.js`
 2. Populate the parameters with your keys
+
+## Deployment and Caching
+
+When deploying updates to production, you must bump the version query string parameter (?v=X.X) on all first party assets to prevent clients from loading stale cache files:
+1. Update the ASSET_VERSION comment constant at the top of index.html
+2. Update all query string parameters (?v=X.X) on asset references inside index.html and imports inside js/app.js
+
