@@ -24,7 +24,6 @@ const altitudeSlider = document.getElementById("altitude-slider");
 const altitudeVal = document.getElementById("altitude-val");
 const citySearchInput = document.getElementById("city-search");
 const autocompleteList = document.getElementById("autocomplete-list");
-const hazeToggle = document.getElementById("haze-toggle");
 const selectedLocationName = document.getElementById("selected-location-name");
 const distMiVal = document.getElementById("dist-mi");
 const distKmVal = document.getElementById("dist-km");
@@ -91,6 +90,21 @@ function setupMap() {
     const lon = e.latlng.lng;
     setCustomLocation(lat, lon);
   });
+
+  // Fix Leaflet collapsed container and partial tile load bugs
+  window.addEventListener("load", () => {
+    setTimeout(() => {
+      currentMap.invalidateSize();
+    }, 100);
+  });
+
+  const mapContainer = document.querySelector(".map-container");
+  if (mapContainer) {
+    const resizeObserver = new ResizeObserver(debounce(() => {
+      currentMap.invalidateSize();
+    }, 100));
+    resizeObserver.observe(mapContainer);
+  }
 }
 
 // Fetch cities and aircraft data
@@ -146,12 +160,6 @@ function parseUrlParams() {
   const lonParam = params.get("lon");
   const aircraftParam = params.get("aircraft");
   const altParam = params.get("alt");
-  const hazeParam = params.get("haze");
-
-  // Set haze if specified
-  if (hazeParam !== null) {
-    hazeToggle.checked = (hazeParam === "true");
-  }
 
   // Set aircraft if specified
   if (aircraftParam && aircraftData.some(ac => ac.id === aircraftParam)) {
@@ -282,12 +290,8 @@ function setupEventListeners() {
     altitudeVal.textContent = parseInt(e.target.value, 10).toLocaleString() + " ft";
   });
 
-  // expensive recalculation runs only when user finishes dragging slider
+  // Expensive recalculation runs only when user finishes dragging slider
   altitudeSlider.addEventListener("change", () => {
-    updateCalculations();
-  });
-
-  hazeToggle.addEventListener("change", () => {
     updateCalculations();
   });
 
@@ -353,18 +357,13 @@ function updateCalculations() {
   const altFtVal = parseInt(altitudeSlider.value, 10);
   const altMVal = ftToM(altFtVal);
 
-  const fullRefractedKm = calculateHorizonRefracted(altMVal);
-  
-  let horizonDistanceKm = fullRefractedKm;
-  const isHazeOn = hazeToggle.checked;
-  if (isHazeOn) {
-    horizonDistanceKm = Math.min(fullRefractedKm, 120);
-  }
+  // Always use refracted theoretical horizon distance
+  const refKm = calculateHorizonRefracted(altMVal);
+  const refMi = kmToMi(refKm);
 
-  const horizonDistanceMi = kmToMi(horizonDistanceKm);
-
-  distKmVal.textContent = Math.round(horizonDistanceKm) + " km";
-  distMiVal.textContent = Math.round(horizonDistanceMi) + " mi";
+  // Update UI values
+  distKmVal.textContent = Math.round(refKm) + " km";
+  distMiVal.textContent = Math.round(refMi) + " mi";
 
   if (originMarker) {
     currentMap.removeLayer(originMarker);
@@ -382,17 +381,17 @@ function updateCalculations() {
     currentMap.removeLayer(horizonCircle);
   }
 
-  const color = isHazeOn ? "#f97316" : "#f59e0b";
+  const color = "#f59e0b";
   horizonCircle = L.circle([lat, lon], {
-    radius: horizonDistanceKm * 1000,
+    radius: refKm * 1000,
     color: color,
     fillColor: color,
     fillOpacity: 0.1,
     weight: 2,
-    dashArray: isHazeOn ? "4, 6" : null
+    dashArray: null
   }).addTo(currentMap);
 
-  updateVisibleCities(lat, lon, horizonDistanceKm);
+  updateVisibleCities(lat, lon, refKm);
   updateUrlParams(lat, lon, altFtVal);
 }
 
@@ -479,7 +478,6 @@ function updateUrlParams(lat, lon, altFt) {
   
   params.set("aircraft", aircraftSelect.value);
   params.set("alt", altFt);
-  params.set("haze", hazeToggle.checked);
   
   const newUrl = `${window.location.pathname}?${params.toString()}`;
   window.history.replaceState({}, "", newUrl);

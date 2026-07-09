@@ -22,9 +22,6 @@ WindowSeatView is a free utility website that calculates how far you can see fro
 2. Theoretical Maximum (Refracted):
    `d_km = 3.86 * sqrt(h_m)`
 
-3. Realistic Haze Mode:
-   Caps visual distance at 120 km (75 miles) to simulate typical atmospheric visibility.
-
 ## Shareable Links
 
 The site supports shareable URL parameters to save and load your current view:
@@ -32,7 +29,6 @@ The site supports shareable URL parameters to save and load your current view:
 * `?lat=latitude&lon=longitude`: Centers on custom coordinates
 * `?aircraft=aircraftid`: Selects an aircraft model
 * `?alt=altitude`: Sets cruise altitude in feet
-* `?haze=true|false`: Enables or disables realistic haze mode
 
 ## Run Locally
 

@@ -51,3 +51,5 @@ WindowSeatView uses OpenStreetMap tiles for the map display. Attribution require
 
 ## Correction log
 - 2026-07-09: Embraer Phenom 300 cruiseFt corrected 37,000 to 41,000 ft per adversarial review finding 6 (typical cruise for the type is 41,000 to 45,000 ft; the earlier value undersold it). Applied by conductor.
+- Favicon: Airplane icon path from Font Awesome Free, used under Creative Commons Attribution 4.0 (CC BY 4.0)
+

@@ -308,14 +308,16 @@ input:checked + .slider-round:before {
 
 /* Map Styling */
 .map-container {
-  flex: 1;
   position: relative;
-  min-height: 350px;
+  height: 50vh;
+  min-height: 400px;
+  width: 100%;
 }
 
 @media (min-width: 768px) {
   .map-container {
-    height: 100%;
+    height: calc(100vh - 65px - 60px);
+    min-height: 0;
   }
 }
 

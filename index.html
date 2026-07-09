@@ -11,6 +11,7 @@
   
   <!-- App Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
 </head>
 <body>
   
@@ -52,20 +53,6 @@
             <input type="text" id="city-search" placeholder="Type a city name or click on map..." autocomplete="off">
             <div id="autocomplete-list" class="autocomplete-items" style="display: none;"></div>
           </div>
-        </div>
-        
-        <div class="form-group">
-          <div class="toggle-container">
-            <div>
-              <div class="toggle-label">Realistic Haze Mode</div>
-              <div class="toggle-subtext">Limits visibility to 120 km (75 mi)</div>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="haze-toggle" checked>
-              <span class="slider-round"></span>
-            </label>
-          </div>
-        </div>
       </div>
       
       <!-- Results Card -->
@@ -79,11 +66,11 @@
           <label>Horizon Distance</label>
           <div class="horizon-metrics">
             <div class="metric-card">
-              <div class="metric-value" id="dist-mi">248 mi</div>
+              <div class="metric-value" id="dist-mi">268 mi</div>
               <div class="metric-label">Miles</div>
             </div>
             <div class="metric-card">
-              <div class="metric-value" id="dist-km">399 km</div>
+              <div class="metric-value" id="dist-km">432 km</div>
               <div class="metric-label">Kilometers</div>
             </div>
           </div>
@@ -136,7 +123,7 @@
         <p>where <code>h_m</code> is your cruise altitude converted to meters.</p>
         <p>However, because Earth's atmosphere refracts light downward, you can actually see slightly beyond the geometric horizon. With standard atmospheric refraction, the theoretical maximum visibility is:</p>
         <p><code>d_km = 3.86 * sqrt(h_m)</code></p>
-        <p>In realistic conditions, air density, dust, and moisture limit how far the human eye can see. Toggle realistic haze mode to cap the visibility range to a typical 120 km (75 miles) limit.</p>
+        <p>In the real world, atmospheric haze, dust, and moisture will reduce what the human eye can pick out on any given day.</p>
       </div>
     </details>
   </footer>
