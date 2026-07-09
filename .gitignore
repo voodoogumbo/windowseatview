@@ -1,2 +1,6 @@
 .DS_Store
 .vercel
+.verify/
+node_modules/
+package.json
+package-lock.json

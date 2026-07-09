@@ -1,12 +1,12 @@
 // WindowSeatView main application script
-import { config } from "./config.js?v=1.2";
+import { config } from "./config.js?v=1.3";
 import { 
   ftToM, 
   kmToMi, 
   calculateHorizonGeometric, 
   calculateHorizonRefracted, 
   haversineDistanceKm 
-} from "./horizon.js?v=1.2";
+} from "./horizon.js?v=1.3";
 
 // State variables
 let aircraftData = [];
@@ -26,7 +26,6 @@ const citySearchInput = document.getElementById("city-search");
 const autocompleteList = document.getElementById("autocomplete-list");
 const selectedLocationName = document.getElementById("selected-location-name");
 const distMiVal = document.getElementById("dist-mi");
-const distKmVal = document.getElementById("dist-km");
 const visibleCitiesList = document.getElementById("visible-cities-list");
 const shareBtn = document.getElementById("share-btn");
 const flagshipBadge = document.getElementById("flagship-badge");
@@ -274,11 +273,6 @@ function updateCityUI(name, countryCode) {
   citySearchInput.value = name;
 }
 
-// Set up UI listeners
-document.addEventListener("DOMContentLoaded", () => {
-  setupEventListeners();
-});
-
 function setupEventListeners() {
   aircraftSelect.addEventListener("change", () => {
     updateAltitudeFromSelect();
@@ -391,8 +385,7 @@ function updateCalculations() {
   const refKm = calculateHorizonRefracted(altMVal);
   const refMi = kmToMi(refKm);
 
-  // Update UI values
-  distKmVal.textContent = Math.round(refKm) + " km";
+  // Update UI values (miles only)
   distMiVal.textContent = Math.round(refMi) + " mi";
 
   if (originMarker) {
@@ -431,16 +424,18 @@ function updateCalculations() {
   }
 }
 
-// Populate Math Modal content with live figures
+// Populate Math Modal content with live figures (miles native math lessons)
 function updateMathModalContent() {
   const altFt = parseInt(altitudeSlider.value, 10);
   const altM = ftToM(altFt);
   
-  const geoKm = calculateHorizonGeometric(altM);
-  const geoMi = kmToMi(geoKm);
-  
   const refKm = calculateHorizonRefracted(altM);
-  const refMi = kmToMi(refKm);
+  const refMiFromEngine = kmToMi(refKm);
+  
+  // Miles native calculations
+  const mathSqrt = Math.sqrt(altFt);
+  const mathGeoMi = 1.225 * mathSqrt;
+  const mathRefMi = 1.324 * mathSqrt;
   
   const modalBody = document.getElementById("modal-math-details");
   if (!modalBody) return;
@@ -448,26 +443,30 @@ function updateMathModalContent() {
   modalBody.innerHTML = `
     <div class="math-step">
       <div class="math-step-title">1. Cruise Altitude</div>
-      <div class="math-formula">${altFt.toLocaleString()} ft &times; 0.3048 = ${Math.round(altM).toLocaleString()} m</div>
-      <div class="math-desc">Your altitude converted from feet to meters.</div>
+      <div class="math-formula">Altitude: ${altFt.toLocaleString()} ft</div>
+      <div class="math-desc">Your flight level or current altitude measured in feet.</div>
     </div>
     
     <div class="math-step">
       <div class="math-step-title">2. Geometric Horizon</div>
-      <div class="math-formula">d = 3.57 &times; &radic;h</div>
-      <div class="math-sub">d = 3.57 &times; &radic;${Math.round(altM).toLocaleString()} = ${Math.round(geoKm).toLocaleString()} km (${Math.round(geoMi).toLocaleString()} mi)</div>
+      <div class="math-formula">d = 1.225 &times; &radic;h</div>
+      <div class="math-sub">d = 1.225 &times; &radic;${altFt.toLocaleString()} = ${Math.round(mathGeoMi).toLocaleString()} mi</div>
       <div class="math-desc">What your eye could reach on a perfectly round, airless Earth.</div>
     </div>
     
     <div class="math-step">
       <div class="math-step-title">3. Refraction Bonus</div>
-      <div class="math-formula">d = 3.86 &times; &radic;h</div>
-      <div class="math-sub">d = 3.86 &times; &radic;${Math.round(altM).toLocaleString()} = ${Math.round(refKm).toLocaleString()} km (${Math.round(refMi).toLocaleString()} mi)</div>
+      <div class="math-formula">d = 1.324 &times; &radic;h</div>
+      <div class="math-sub">d = 1.324 &times; &radic;${altFt.toLocaleString()} = ${Math.round(mathRefMi).toLocaleString()} mi</div>
       <div class="math-desc">Earth's atmosphere bends light downward around the curve, stretching your view by about 8 percent. This is the distance used by the map.</div>
     </div>
     
+    <div class="math-desc" style="text-align: center; margin-top: 0.5rem;">
+      The mathematical constants in these formulas fold in Earth's radius, unit conversions, and atmospheric refraction.
+    </div>
+
     <div class="math-kid-friendly">
-      From your seat, you can see across a horizon that is ${Math.round(refKm).toLocaleString()} km (${Math.round(refMi).toLocaleString()} mi) wide!
+      From your seat, you can see across a horizon that is ${Math.round(mathRefMi).toLocaleString()} mi wide!
     </div>
   `;
 }
@@ -516,7 +515,6 @@ function updateVisibleCities(centerLat, centerLon, horizonLimitKm) {
       </div>
       <div class="city-row-dist">
         <div>${Math.round(c.distMi)} mi</div>
-        <div class="city-row-dist-sub">${Math.round(c.distKm)} km</div>
       </div>
     `;
     visibleCitiesList.appendChild(row);
@@ -531,7 +529,7 @@ function updateVisibleCities(centerLat, centerLon, horizonLimitKm) {
     
     marker.bindPopup(`
       <strong>${c.n}, ${c.c}</strong><br>
-      Distance: ${Math.round(c.distMi)} mi (${Math.round(c.distKm)} km)<br>
+      Distance: ${Math.round(c.distMi)} mi<br>
       Population: ${c.p.toLocaleString()}
     `);
     
@@ -579,5 +577,5 @@ function copyShareUrl() {
   });
 }
 
-// Start application
-window.addEventListener("DOMContentLoaded", init);
+// Start application immediately on load
+init();
