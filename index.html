@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WindowSeatView</title>
+  
+  <!-- Leaflet CDN -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <!-- App Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  
+  <header>
+    <div class="logo-container">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+        </svg>
+      </div>
+      <h1>WindowSeatView</h1>
+      <span class="badge" id="flagship-badge">Dassault Falcon 7X - Our test aircraft</span>
+    </div>
+  </header>
+  
+  <main>
+    <div class="sidebar">
+      
+      <!-- Selection Card -->
+      <div class="card">
+        <div class="form-group">
+          <label for="aircraft-select">Select Aircraft</label>
+          <select id="aircraft-select">
+            <option value="">Loading aircraft...</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="altitude-slider">Cruise Altitude</label>
+          <div class="slider-container">
+            <input type="range" id="altitude-slider" min="1000" max="51000" step="500" value="41000">
+            <span class="slider-value" id="altitude-val">41,000 ft</span>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="city-search">Center Location (City Search)</label>
+          <div class="search-wrapper">
+            <input type="text" id="city-search" placeholder="Type a city name or click on map..." autocomplete="off">
+            <div id="autocomplete-list" class="autocomplete-items" style="display: none;"></div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <div class="toggle-container">
+            <div>
+              <div class="toggle-label">Realistic Haze Mode</div>
+              <div class="toggle-subtext">Limits visibility to 120 km (75 mi)</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="haze-toggle" checked>
+              <span class="slider-round"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Results Card -->
+      <div class="card results-panel">
+        <div>
+          <label>Viewing Center</label>
+          <div id="selected-location-name" style="font-weight: 600; font-size: 1.05rem;">Chicago, US</div>
+        </div>
+        
+        <div>
+          <label>Horizon Distance</label>
+          <div class="horizon-metrics">
+            <div class="metric-card">
+              <div class="metric-value" id="dist-mi">248 mi</div>
+              <div class="metric-label">Miles</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value" id="dist-km">399 km</div>
+              <div class="metric-label">Kilometers</div>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <label>Cities You Could See</label>
+          <div class="city-list-container">
+            <div class="city-list-header">
+              <span>City</span>
+              <span>Distance</span>
+            </div>
+            <div id="visible-cities-list">
+              <div class="no-cities-msg">No visible cities in range.</div>
+            </div>
+          </div>
+        </div>
+        
+        <button id="share-btn" class="btn btn-share">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+            <polyline points="16 6 12 2 8 6"></polyline>
+            <line x1="12" y1="2" x2="12" y2="15"></line>
+          </svg>
+          Share View
+        </button>
+      </div>
+      
+    </div>
+    
+    <!-- Map Area -->
+    <div class="map-container">
+      <div id="map"></div>
+      <div class="map-overlay-vignette"></div>
+    </div>
+  </main>
+  
+  <footer>
+    <div class="attribution-links">
+      Data courtesy of <a href="https://www.geonames.org/" target="_blank" rel="noopener">GeoNames</a>. 
+      Maps powered by <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors.
+    </div>
+    <div id="bmc-container"></div>
+    
+    <details>
+      <summary>How the Math Works</summary>
+      <div class="details-content">
+        <p>Your horizon distance depends directly on your altitude above the ground. If Earth were a perfect sphere without atmosphere, the geometric distance to the horizon would be:</p>
+        <p><code>d_km = 3.57 * sqrt(h_m)</code></p>
+        <p>where <code>h_m</code> is your cruise altitude converted to meters.</p>
+        <p>However, because Earth's atmosphere refracts light downward, you can actually see slightly beyond the geometric horizon. With standard atmospheric refraction, the theoretical maximum visibility is:</p>
+        <p><code>d_km = 3.86 * sqrt(h_m)</code></p>
+        <p>In realistic conditions, air density, dust, and moisture limit how far the human eye can see. Toggle realistic haze mode to cap the visibility range to a typical 120 km (75 miles) limit.</p>
+      </div>
+    </details>
+  </footer>
+  
+  <!-- App Logic -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

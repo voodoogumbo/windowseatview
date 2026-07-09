@@ -1,0 +1,153 @@
+[
+  {
+    "id": "falcon-7x",
+    "name": "Dassault Falcon 7X",
+    "type": "business jet",
+    "cruiseFt": 41000,
+    "featured": true
+  },
+  {
+    "id": "gulfstream-g650",
+    "name": "Gulfstream G650",
+    "type": "business jet",
+    "cruiseFt": 43000
+  },
+  {
+    "id": "bombardier-global-7500",
+    "name": "Bombardier Global 7500",
+    "type": "business jet",
+    "cruiseFt": 43000
+  },
+  {
+    "id": "citation-x",
+    "name": "Cessna Citation X",
+    "type": "business jet",
+    "cruiseFt": 41000
+  },
+  {
+    "id": "phenom-300",
+    "name": "Embraer Phenom 300",
+    "type": "business jet",
+    "cruiseFt": 41000
+  },
+  {
+    "id": "boeing-737-800",
+    "name": "Boeing 737-800",
+    "type": "airliner",
+    "cruiseFt": 35000
+  },
+  {
+    "id": "airbus-a320",
+    "name": "Airbus A320",
+    "type": "airliner",
+    "cruiseFt": 35000
+  },
+  {
+    "id": "airbus-a321",
+    "name": "Airbus A321",
+    "type": "airliner",
+    "cruiseFt": 35000
+  },
+  {
+    "id": "boeing-787-9",
+    "name": "Boeing 787-9 Dreamliner",
+    "type": "airliner",
+    "cruiseFt": 40000
+  },
+  {
+    "id": "airbus-a350",
+    "name": "Airbus A350",
+    "type": "airliner",
+    "cruiseFt": 40000
+  },
+  {
+    "id": "boeing-777",
+    "name": "Boeing 777-300ER",
+    "type": "airliner",
+    "cruiseFt": 40000
+  },
+  {
+    "id": "airbus-a380",
+    "name": "Airbus A380-800",
+    "type": "airliner",
+    "cruiseFt": 40000
+  },
+  {
+    "id": "bombardier-e175",
+    "name": "Embraer E175",
+    "type": "regional",
+    "cruiseFt": 37000
+  },
+  {
+    "id": "bombardier-crj900",
+    "name": "Bombardier CRJ900",
+    "type": "regional",
+    "cruiseFt": 35000
+  },
+  {
+    "id": "atr-72",
+    "name": "ATR 72",
+    "type": "regional",
+    "cruiseFt": 27000
+  },
+  {
+    "id": "bombardier-q400",
+    "name": "Bombardier Q400",
+    "type": "regional",
+    "cruiseFt": 29500
+  },
+  {
+    "id": "de-havilland-dash8",
+    "name": "De Havilland Dash 8-300",
+    "type": "regional",
+    "cruiseFt": 25000
+  },
+  {
+    "id": "saab-340",
+    "name": "Saab 340",
+    "type": "regional",
+    "cruiseFt": 27000
+  },
+  {
+    "id": "cessna-172",
+    "name": "Cessna 172",
+    "type": "general aviation",
+    "cruiseFt": 13500
+  },
+  {
+    "id": "piper-pa28",
+    "name": "Piper PA-28 Cherokee",
+    "type": "general aviation",
+    "cruiseFt": 12000
+  },
+  {
+    "id": "beechcraft-bonanza",
+    "name": "Beechcraft Bonanza",
+    "type": "general aviation",
+    "cruiseFt": 18000
+  },
+  {
+    "id": "pilatus-pc12",
+    "name": "Pilatus PC-12",
+    "type": "general aviation",
+    "cruiseFt": 27000
+  },
+  {
+    "id": "cirrus-sr22",
+    "name": "Cirrus SR22",
+    "type": "general aviation",
+    "cruiseFt": 17500
+  },
+  {
+    "id": "piper-pa46",
+    "name": "Piper PA-46 Malibu",
+    "type": "general aviation",
+    "cruiseFt": 20000
+  },
+  {
+    "id": "diamond-da40",
+    "name": "Diamond DA40",
+    "type": "general aviation",
+    "cruiseFt": 17500
+  }
+]
