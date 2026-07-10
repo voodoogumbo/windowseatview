@@ -1,7 +1,7 @@
 <!--
-  ASSET_VERSION = "1.3"
+  ASSET_VERSION = "1.4"
   BUMP RULE: Increment this version constant on every production deploy.
-  Update all first party asset query parameters (?v=1.3) in this file and app.js.
+  Update all first party asset query parameters (?v=1.4) in this file and app.js.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -15,8 +15,8 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   
   <!-- App Stylesheet -->
-  <link rel="stylesheet" href="css/styles.css?v=1.3">
-  <link rel="icon" href="favicon.svg?v=1.3" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css?v=1.4">
+  <link rel="icon" href="favicon.svg?v=1.4" type="image/svg+xml">
 </head>
 <body>
   
@@ -31,6 +31,10 @@
       <span class="badge" id="flagship-badge">Dassault Falcon 7X - Our test aircraft</span>
     </div>
   </header>
+
+  <div id="load-error" class="error-banner" style="display: none;" role="alert">
+    Could not load aircraft and city data. Check your connection and reload.
+  </div>
   
   <main>
     <div class="sidebar">
@@ -55,8 +59,8 @@
         <div class="form-group">
           <label for="city-search">Center Location (City Search)</label>
           <div class="search-wrapper">
-            <input type="text" id="city-search" placeholder="Type a city name or click on map..." autocomplete="off">
-            <div id="autocomplete-list" class="autocomplete-items" style="display: none;"></div>
+            <input type="text" id="city-search" placeholder="Type a city name or click on map..." autocomplete="off" aria-haspopup="listbox" aria-expanded="false" aria-autocomplete="list" aria-controls="autocomplete-list">
+            <div id="autocomplete-list" class="autocomplete-items" style="display: none;" role="listbox" aria-label="City suggestions"></div>
           </div>
         </div>
       </div>
@@ -108,6 +112,9 @@
     <div class="map-container">
       <div id="map"></div>
       <div class="map-overlay-vignette"></div>
+      <div id="map-error-overlay" class="map-error-overlay" style="display: none;" role="alert">
+        <span>Map tiles failed to load. Check your network connection.</span>
+      </div>
     </div>
   </main>
   
@@ -122,11 +129,11 @@
       <summary>How the Math Works</summary>
       <div class="details-content">
         <p>Your horizon distance depends directly on your altitude above the ground. If Earth were a perfect sphere without atmosphere, the geometric distance to the horizon would be:</p>
-        <p><code>d_km = 3.57 * sqrt(h_m)</code></p>
-        <p>where <code>h_m</code> is your cruise altitude converted to meters.</p>
+        <p><code>d = 1.225 * sqrt(h)</code></p>
+        <p>where <code>h</code> is your cruise altitude in feet and <code>d</code> is in miles.</p>
         <p>However, because Earth's atmosphere refracts light downward, you can actually see slightly beyond the geometric horizon. With standard atmospheric refraction, the theoretical maximum visibility is:</p>
-        <p><code>d_km = 3.86 * sqrt(h_m)</code></p>
-        <p>In the real world, atmospheric haze, dust, and moisture will reduce what the human eye can pick out on any given day.</p>
+        <p><code>d = 1.324 * sqrt(h)</code></p>
+        <p>In the real world, atmospheric haze, dust, and moisture will reduce what the human eye can pick out on any given day. The mathematical constants in these formulas fold in Earth's radius, unit conversions, and atmospheric refraction.</p>
       </div>
     </details>
   </footer>
@@ -145,6 +152,6 @@
   </div>
 
   <!-- App Logic -->
-  <script type="module" src="js/app.js?v=1.3"></script>
+  <script type="module" src="js/app.js?v=1.4"></script>
 </body>
 </html>

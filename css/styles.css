@@ -78,6 +78,7 @@ h1 {
   letter-spacing: -0.025em;
   background: linear-gradient(to right, #fff, #cbd5e1);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -99,9 +100,14 @@ main {
 }
 
 @media (min-width: 768px) {
+  body {
+    height: 100vh;
+    overflow: hidden;
+  }
   main {
     flex-direction: row;
-    height: calc(100vh - 65px - 60px); /* subtract header and footer */
+    flex: 1;
+    min-height: 0;
   }
 }
 
@@ -188,75 +194,7 @@ input[type="range"] {
   text-align: right;
 }
 
-/* Haze Toggle switch styling */
-.toggle-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: rgba(255, 255, 255, 0.03);
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 44px;
-  height: 24px;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider-round {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #4b5563;
-  transition: .3s;
-  border-radius: 24px;
-}
-
-.slider-round:before {
-  position: absolute;
-  content: "";
-  height: 18px;
-  width: 18px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
-  transition: .3s;
-  border-radius: 50%;
-}
-
-input:checked + .slider-round {
-  background-color: var(--accent-blue);
-}
-
-input:focus + .slider-round {
-  box-shadow: 0 0 1px var(--accent-blue);
-}
-
-input:checked + .slider-round:before {
-  transform: translateX(20px);
-}
-
-.toggle-label {
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.toggle-subtext {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
+/* Haze Toggle feature was removed by Will's ruling */
 
 /* City Search Box & Autocomplete dropdown */
 .search-wrapper {
@@ -316,7 +254,7 @@ input:checked + .slider-round:before {
 
 @media (min-width: 768px) {
   .map-container {
-    height: calc(100vh - 65px - 60px);
+    flex: 1;
     min-height: 0;
   }
 }
@@ -425,12 +363,6 @@ input:checked + .slider-round:before {
   font-weight: 600;
 }
 
-.city-row-dist-sub {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  font-weight: 400;
-}
-
 .no-cities-msg {
   padding: 1.5rem;
   text-align: center;
@@ -450,8 +382,13 @@ input:checked + .slider-round:before {
   border: none;
   cursor: pointer;
   transition: background-color 0.2s, transform 0.1s;
-  outline: none;
+  outline: 2px solid transparent;
   text-decoration: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
 }
 
 .btn:active {
@@ -529,8 +466,13 @@ summary {
   font-weight: 600;
   font-size: 0.85rem;
   cursor: pointer;
-  outline: none;
+  outline: 2px solid transparent;
   user-select: none;
+}
+
+summary:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
 }
 
 summary:hover {
@@ -700,5 +642,39 @@ summary:hover {
   color: var(--accent-blue);
   text-align: center;
   margin-top: 0.5rem;
+}
+
+/* Visible data load error banner styling */
+.error-banner {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 0.75rem 1rem;
+  text-align: center;
+  font-weight: 500;
+  font-size: 0.9rem;
+  border-radius: 0.5rem;
+  margin: 1rem;
+  z-index: 100;
+}
+
+/* Map tiles failure overlay styling */
+.map-error-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  color: #f87171;
+  font-weight: 500;
+  font-size: 1rem;
+  pointer-events: none;
+  padding: 1.5rem;
+  text-align: center;
 }
 

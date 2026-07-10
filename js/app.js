@@ -1,12 +1,12 @@
 // WindowSeatView main application script
-import { config } from "./config.js?v=1.3";
+import { config } from "./config.js?v=1.4";
 import { 
   ftToM, 
   kmToMi, 
   calculateHorizonGeometric, 
   calculateHorizonRefracted, 
   haversineDistanceKm 
-} from "./horizon.js?v=1.3";
+} from "./horizon.js?v=1.4";
 
 // State variables
 let aircraftData = [];
@@ -71,6 +71,9 @@ function setupBuyMeACoffee() {
 
 // Setup Leaflet map
 function setupMap() {
+  // Prevent double initialization
+  if (currentMap) return;
+
   currentMap = L.map("map", {
     center: [39.8283, -98.5795],
     zoom: 4,
@@ -90,6 +93,14 @@ function setupMap() {
     setCustomLocation(lat, lon);
   });
 
+  // Handle tile load errors
+  currentMap.on("tileerror", () => {
+    const mapOverlay = document.getElementById("map-error-overlay");
+    if (mapOverlay) {
+      mapOverlay.style.display = "flex";
+    }
+  });
+
   // Fix Leaflet collapsed container and partial tile load bugs
   window.addEventListener("load", () => {
     setTimeout(() => {
@@ -106,16 +117,21 @@ function setupMap() {
   }
 }
 
-// Fetch cities and aircraft data
+// Fetch cities and aircraft data in parallel
 async function loadData() {
   try {
-    const aircraftRes = await fetch("data/aircraft.json");
+    const [aircraftRes, citiesRes] = await Promise.all([
+      fetch("data/aircraft.json"),
+      fetch("data/cities.json")
+    ]);
     aircraftData = await aircraftRes.json();
-
-    const citiesRes = await fetch("data/cities.json");
     citiesData = await citiesRes.json();
   } catch (err) {
     console.error("Error loading JSON data:", err);
+    const errorBanner = document.getElementById("load-error");
+    if (errorBanner) {
+      errorBanner.style.display = "block";
+    }
   }
 }
 
@@ -172,6 +188,7 @@ function parseUrlParams() {
     if (!isNaN(alt) && alt >= 1000 && alt <= 51000) {
       altitudeSlider.value = alt;
       altitudeVal.textContent = alt.toLocaleString() + " ft";
+      altitudeSlider.setAttribute("aria-valuetext", alt.toLocaleString() + " feet");
     }
   } else {
     updateAltitudeFromSelect();
@@ -234,6 +251,7 @@ function updateAltitudeFromSelect() {
   if (ac) {
     altitudeSlider.value = ac.cruiseFt;
     altitudeVal.textContent = ac.cruiseFt.toLocaleString() + " ft";
+    altitudeSlider.setAttribute("aria-valuetext", ac.cruiseFt.toLocaleString() + " feet");
     toggleFlagshipBadge(acId === "falcon-7x");
   }
 }
@@ -281,7 +299,9 @@ function setupEventListeners() {
 
   // Optimize performance by updating visual readout text only during drag
   altitudeSlider.addEventListener("input", (e) => {
-    altitudeVal.textContent = parseInt(e.target.value, 10).toLocaleString() + " ft";
+    const val = parseInt(e.target.value, 10);
+    altitudeVal.textContent = val.toLocaleString() + " ft";
+    altitudeSlider.setAttribute("aria-valuetext", val.toLocaleString() + " feet");
   });
 
   // Expensive recalculation runs only when user finishes dragging slider
@@ -296,6 +316,18 @@ function setupEventListeners() {
   document.addEventListener("click", (e) => {
     if (e.target !== citySearchInput) {
       autocompleteList.style.display = "none";
+      citySearchInput.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  // Search input keyboard trigger to focus Suggestions list
+  citySearchInput.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown") {
+      const firstItem = autocompleteList.querySelector(".autocomplete-item");
+      if (firstItem) {
+        e.preventDefault();
+        firstItem.focus();
+      }
     }
   });
 
@@ -325,9 +357,15 @@ function setupEventListeners() {
     }
   });
 
+  // Modal keyboard listener with focus trap
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && mathModal.style.display === "flex") {
-      closeModal();
+    if (mathModal.style.display === "flex") {
+      if (e.key === "Escape") {
+        closeModal();
+      } else if (e.key === "Tab") {
+        e.preventDefault();
+        closeModalBtn.focus();
+      }
     }
   });
 }
@@ -337,6 +375,7 @@ function handleSearchInput() {
   const query = citySearchInput.value.trim().toLowerCase();
   if (!query) {
     autocompleteList.style.display = "none";
+    citySearchInput.setAttribute("aria-expanded", "false");
     return;
   }
 
@@ -346,25 +385,70 @@ function handleSearchInput() {
 
   if (!matches.length) {
     autocompleteList.style.display = "none";
+    citySearchInput.setAttribute("aria-expanded", "false");
     return;
   }
 
   autocompleteList.innerHTML = "";
-  matches.forEach(c => {
+  citySearchInput.setAttribute("aria-expanded", "true");
+
+  matches.forEach((c, idx) => {
     const div = document.createElement("div");
     div.className = "autocomplete-item";
+    div.setAttribute("role", "option");
+    div.setAttribute("tabindex", "0");
+    div.setAttribute("aria-selected", "false");
+    div.id = `city-suggest-opt-${idx}`;
     div.innerHTML = `
       <span>${c.n}</span>
       <span class="autocomplete-country">${c.c}</span>
     `;
-    div.addEventListener("click", () => {
+
+    const selectThisCity = () => {
       selectedCity = c;
       customCoords = null;
       updateCityUI(c.n, c.c);
       currentMap.setView([c.lat, c.lon], 6);
       autocompleteList.style.display = "none";
+      citySearchInput.setAttribute("aria-expanded", "false");
       updateCalculations();
+    };
+
+    div.addEventListener("click", selectThisCity);
+
+    div.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        selectThisCity();
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        const next = div.nextSibling;
+        if (next) {
+          next.focus();
+        }
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        const prev = div.previousSibling;
+        if (prev) {
+          prev.focus();
+        } else {
+          citySearchInput.focus();
+        }
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        autocompleteList.style.display = "none";
+        citySearchInput.setAttribute("aria-expanded", "false");
+        citySearchInput.focus();
+      }
     });
+
+    // Update suggestions aria-selected on focus
+    div.addEventListener("focus", () => {
+      const items = autocompleteList.querySelectorAll(".autocomplete-item");
+      items.forEach(el => el.setAttribute("aria-selected", "false"));
+      div.setAttribute("aria-selected", "true");
+    });
+
     autocompleteList.appendChild(div);
   });
 
@@ -427,10 +511,6 @@ function updateCalculations() {
 // Populate Math Modal content with live figures (miles native math lessons)
 function updateMathModalContent() {
   const altFt = parseInt(altitudeSlider.value, 10);
-  const altM = ftToM(altFt);
-  
-  const refKm = calculateHorizonRefracted(altM);
-  const refMiFromEngine = kmToMi(refKm);
   
   // Miles native calculations
   const mathSqrt = Math.sqrt(altFt);

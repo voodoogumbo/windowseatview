@@ -57,6 +57,6 @@ To add Buy Me a Coffee links or Discord webhooks:
 ## Deployment and Caching
 
 When deploying updates to production, you must bump the version query string parameter (?v=X.X) on all first party assets to prevent clients from loading stale cache files:
-1. Update the ASSET_VERSION comment constant at the top of index.html
+1. Update the ASSET_VERSION comment constant at the top of index.html (currently 1.4)
 2. Update all query string parameters (?v=X.X) on asset references inside index.html and imports inside js/app.js
 
